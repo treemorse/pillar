@@ -11,18 +11,6 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const YandexMap(),
-        Positioned(
-          bottom: 0,
-          right: 16,
-          height: 60,
-          child: FloatingActionButton(
-            onPressed: () {},
-          ),
-        ),
-      ],
-    );
+    return const YandexMap();
   }
 }
