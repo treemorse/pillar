@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../reusable_widgets/reusable_widget.dart';
 import '../utils/colors_utils.dart';
 import 'map_screen.dart';
@@ -32,11 +31,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-          hexStringToColor("CB2B93"),
-          hexStringToColor("9546C4"),
-          hexStringToColor("5E61F4")
-        ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+          gradient: LinearGradient(
+            colors: [
+              hexStringToColor("996600"),
+              hexStringToColor("CC8800"),
+              hexStringToColor("222200"),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
@@ -76,6 +80,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     // ignore: avoid_print
                     print("Error ${error.toString()}");
                   });
+                  // ignore: avoid_print
                 })
               ],
             ),
