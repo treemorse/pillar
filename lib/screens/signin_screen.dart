@@ -1,11 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pillar/screens/reset_password.dart';
 import 'package:pillar/screens/signup_screen.dart';
-
+import '../resources/auth_methods.dart';
 import '../reusable_widgets/reusable_widget.dart';
 import '../utils/colors_utils.dart';
-import 'map_screen.dart';
+import '../utils/utils.dart';
+import 'mapbox_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -17,6 +17,22 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
+
+  void loginUser() async {
+    String res = await AuthMethods().loginUser(
+        email: _emailTextController.text,
+        password: _passwordTextController.text);
+    if (res == "success") {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const MapBoxScreen(),
+        ),
+      );
+    } else {
+      showSnackBar(context, res);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,11 +41,7 @@ class _SignInScreenState extends State<SignInScreen> {
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              hexStringToColor("996600"),
-              hexStringToColor("CC8800"),
-              hexStringToColor("222200"),
-            ],
+            colors: colors(),
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -37,12 +49,12 @@ class _SignInScreenState extends State<SignInScreen> {
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-                20, MediaQuery.of(context).size.height * 0.2, 20, 0),
+                20, MediaQuery.of(context).size.height * 0.15, 20, 0),
             child: Column(
               children: <Widget>[
                 logoWidget("lib/assets/images/logo1.png"),
                 const SizedBox(
-                  height: 30,
+                  height: 60,
                 ),
                 reusableTextField("Enter Email", Icons.person_outline, false,
                     _emailTextController),
@@ -55,21 +67,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   height: 5,
                 ),
                 forgetPassword(context),
-                firebaseUIButton(context, "Sign In", () {
-                  FirebaseAuth.instance
-                      .signInWithEmailAndPassword(
-                          email: _emailTextController.text,
-                          password: _passwordTextController.text)
-                      .then((value) {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MapScreen()));
-                  }).onError((error, stackTrace) {
-                    // ignore: avoid_print
-                    print("Error ${error.toString()}");
-                  });
-                }),
+                firebaseUIButton(context, "Sign In", () => loginUser()),
                 signUpOption()
               ],
             ),

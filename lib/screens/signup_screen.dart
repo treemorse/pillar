@@ -1,8 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import '../resources/auth_methods.dart';
 import '../reusable_widgets/reusable_widget.dart';
 import '../utils/colors_utils.dart';
-import 'map_screen.dart';
+import '../utils/utils.dart';
+import 'mapbox_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -15,6 +18,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
   final TextEditingController _userNameTextController = TextEditingController();
+  Uint8List? _image;
+
+  selectImage() async {
+    Uint8List im = await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = im;
+    });
+  }
+
+  void signUpUser() async {
+    String res = await AuthMethods().signUpUser(
+        email: _emailTextController.text,
+        password: _passwordTextController.text,
+        username: _userNameTextController.text,
+        file: _image!);
+    if (res == "success") {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const MapBoxScreen(),
+        ),
+      );
+    } else {
+      showSnackBar(context, res);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,11 +61,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              hexStringToColor("996600"),
-              hexStringToColor("CC8800"),
-              hexStringToColor("222200"),
-            ],
+            colors: colors(),
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -46,8 +71,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
             padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
             child: Column(
               children: <Widget>[
+                const SizedBox(height: 40),
+                Stack(
+                  children: [
+                    _image != null
+                        ? CircleAvatar(
+                            radius: 64,
+                            backgroundImage: MemoryImage(_image!),
+                            backgroundColor: Colors.red,
+                          )
+                        : const CircleAvatar(
+                            radius: 64,
+                            backgroundImage: NetworkImage(
+                                'https://i.stack.imgur.com/l60Hf.png'),
+                            backgroundColor: Colors.red,
+                          ),
+                    Positioned(
+                      bottom: -10,
+                      left: 80,
+                      child: IconButton(
+                        onPressed: selectImage,
+                        icon: const Icon(Icons.add_a_photo),
+                      ),
+                    )
+                  ],
+                ),
                 const SizedBox(
-                  height: 20,
+                  height: 60,
                 ),
                 reusableTextField("Enter UserName", Icons.person_outline, false,
                     _userNameTextController),
@@ -64,24 +114,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-                firebaseUIButton(context, "Sign Up", () {
-                  FirebaseAuth.instance
-                      .createUserWithEmailAndPassword(
-                          email: _emailTextController.text,
-                          password: _passwordTextController.text)
-                      .then((value) {
-                    // ignore: avoid_print
-                    print("Created New Account");
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MapScreen()));
-                  }).onError((error, stackTrace) {
-                    // ignore: avoid_print
-                    print("Error ${error.toString()}");
-                  });
-                  // ignore: avoid_print
-                })
+                firebaseUIButton(context, "Sign Up", () => signUpUser())
               ],
             ),
           ),

@@ -7,3 +7,9 @@ hexStringToColor(String hexColor) {
   }
   return Color(int.parse(hexColor, radix: 16));
 }
+
+List<Color> colors() => [
+      hexStringToColor("996600"),
+      hexStringToColor("DD3300"),
+      hexStringToColor("440000"),
+    ];

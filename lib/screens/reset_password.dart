@@ -30,11 +30,7 @@ class _ResetPasswordState extends State<ResetPassword> {
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              hexStringToColor("996600"),
-              hexStringToColor("CC8800"),
-              hexStringToColor("222200"),
-            ],
+            colors: colors(),
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
